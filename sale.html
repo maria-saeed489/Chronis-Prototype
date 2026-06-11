@@ -1,0 +1,1685 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Chronis | Behavioral Insight Engine</title>
+
+  <!-- Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Outfit:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --blue: #1A7BF5;
+      --blue-light: #E8F2FE;
+      --blue-mid: #5BA4F8;
+      --navy: #0A2540;
+      --sky: #B8D9FD;
+      --white: #FFFFFF;
+      --bg: #F4F8FF;
+      --card: #FFFFFF;
+      --text: #0A2540;
+      --muted: #6B7A99;
+      --border: #DCE7F7;
+      --green: #22C55E;
+      --amber: #F59E0B;
+      --red: #EF4444;
+      --purple: #7C3AED;
+      --pink: #EC4899;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    .font-heading {
+      font-family: 'Outfit', sans-serif;
+    }
+
+    /* App Layout */
+    .app {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background: var(--navy);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 20;
+      transition: transform 0.3s ease;
+    }
+
+    .logo {
+      padding: 24px 20px 28px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #1A7BF5, #7C3AED);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-icon i {
+      color: white;
+      font-size: 20px;
+    }
+
+    .logo-text {
+      font-family: 'Outfit', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .logo-text span {
+      color: #5BA4F8;
+    }
+
+    .nav-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: #4A6080;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 20px 20px 8px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 20px;
+      color: #8BA0BC;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
+      margin: 2px 0;
+    }
+
+    .nav-item:hover {
+      color: white;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-item.active {
+      color: white;
+      background: rgba(26, 123, 245, 0.18);
+      border-left-color: var(--blue);
+    }
+
+    .nav-item i {
+      font-size: 18px;
+      width: 22px;
+    }
+
+    .user-section {
+      margin-top: auto;
+      padding: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .user-pill {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1A7BF5, #7C3AED);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: white;
+    }
+
+    .user-info p {
+      font-size: 13px;
+      color: #C8D8EE;
+      font-weight: 500;
+    }
+
+    .user-info span {
+      font-size: 11px;
+      color: #4A6080;
+    }
+
+    /* Main Content */
+    .main {
+      flex: 1;
+      margin-left: 260px;
+      min-height: 100vh;
+    }
+
+    /* Topbar */
+    .topbar {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    .topbar-left h2 {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--navy);
+    }
+
+    .topbar-left p {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .date-badge {
+      background: var(--blue-light);
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 6px 14px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .notif-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      position: relative;
+    }
+
+    .notif-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--red);
+      border-radius: 50%;
+      position: absolute;
+      top: 6px;
+      right: 6px;
+    }
+
+    /* Content */
+    .content {
+      padding: 28px;
+    }
+
+    /* Pages */
+    .page {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Grid System */
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 20px;
+      transition: all 0.2s;
+    }
+
+    .card:hover {
+      box-shadow: 0 8px 24px rgba(10, 37, 64, 0.08);
+    }
+
+    .metric-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 18px;
+      transition: all 0.2s;
+      animation: slideUp 0.4s ease both;
+    }
+
+    .metric-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 28px rgba(26, 123, 245, 0.12);
+    }
+
+    .metric-label {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 500;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .metric-value {
+      font-family: 'Outfit', sans-serif;
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    .metric-change {
+      font-size: 12px;
+      font-weight: 500;
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .up {
+      color: var(--green);
+    }
+
+    .down {
+      color: var(--red);
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Section Header */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--navy);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-title i {
+      color: var(--blue);
+      font-size: 18px;
+    }
+
+    .see-all {
+      font-size: 12px;
+      color: var(--blue);
+      cursor: pointer;
+      font-weight: 500;
+      background: none;
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Period Selector */
+    .period-selector {
+      display: flex;
+      gap: 6px;
+    }
+
+    .period-btn {
+      font-size: 11px;
+      padding: 5px 12px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: white;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .period-btn.active {
+      background: var(--blue);
+      color: white;
+      border-color: var(--blue);
+    }
+
+    /* Confidence Rings */
+    .conf-ring-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ring-container {
+      position: relative;
+      width: 80px;
+      height: 80px;
+    }
+
+    .ring-svg {
+      width: 80px;
+      height: 80px;
+      transform: rotate(-90deg);
+    }
+
+    .ring-bg {
+      fill: none;
+      stroke: var(--blue-light);
+      stroke-width: 6;
+    }
+
+    .ring-fill {
+      fill: none;
+      stroke-width: 6;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 1.2s ease;
+    }
+
+    .ring-label {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    .ring-name {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    /* Progress */
+    .progress-wrap {
+      margin: 12px 0;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .progress-track {
+      height: 8px;
+      background: var(--blue-light);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 20px;
+      transition: width 1s ease;
+    }
+
+    /* Insight Items */
+    .insight-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: white;
+    }
+
+    .insight-item:hover {
+      border-color: var(--blue-mid);
+      background: #F8FBFF;
+      transform: translateX(4px);
+    }
+
+    .insight-dot {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .insight-body h4 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: 4px;
+    }
+
+    .insight-body p {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .insight-meta {
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* Badges */
+    .badge {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    .badge-blue {
+      background: var(--blue-light);
+      color: var(--blue);
+    }
+
+    .badge-green {
+      background: #D1FAE5;
+      color: #065F46;
+    }
+
+    .badge-amber {
+      background: #FEF3C7;
+      color: #92400E;
+    }
+
+    .badge-red {
+      background: #FEE2E2;
+      color: #991B1B;
+    }
+
+    .badge-purple {
+      background: #EDE9FE;
+      color: #5B21B6;
+    }
+
+    /* Uncertainty Box */
+    .uncertainty-box {
+      background: #FFFBEB;
+      border: 1px solid #FDE68A;
+      border-radius: 12px;
+      padding: 12px 14px;
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .uncertainty-box i {
+      color: #D97706;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .uncertainty-box p {
+      font-size: 12px;
+      color: #78350F;
+      line-height: 1.5;
+    }
+
+    /* Timeline */
+    .timeline-wrap {
+      position: relative;
+    }
+
+    .tl-item {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 8px;
+    }
+
+    .tl-left {
+      min-width: 60px;
+    }
+
+    .tl-date {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 500;
+      padding-top: 4px;
+    }
+
+    .tl-dot-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 20px;
+    }
+
+    .tl-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 2px solid;
+      margin-top: 6px;
+    }
+
+    .tl-dot-line {
+      width: 2px;
+      background: var(--border);
+      flex: 1;
+      margin: 4px 0;
+    }
+
+    .tl-content {
+      flex: 1;
+      padding-bottom: 20px;
+    }
+
+    .tl-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tl-card:hover {
+      border-color: var(--blue-mid);
+      box-shadow: 0 2px 12px rgba(26, 123, 245, 0.08);
+    }
+
+    .tl-card h4 {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .tl-card p {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* Heatmap */
+    .heatmap-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+    }
+
+    .hm-cell {
+      height: 34px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+
+    .hm-cell:hover {
+      transform: scale(1.05);
+    }
+
+    .hm-label-row {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    .hm-label {
+      font-size: 10px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 6px;
+      background: var(--bg);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 20px;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      border: none;
+      background: none;
+      border-radius: 8px;
+      cursor: pointer;
+      color: var(--muted);
+      transition: all 0.2s;
+    }
+
+    .tab.active {
+      background: white;
+      color: var(--navy);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 37, 64, 0.5);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal {
+      background: white;
+      border-radius: 24px;
+      width: 520px;
+      max-width: 90vw;
+      max-height: 80vh;
+      overflow-y: auto;
+      padding: 24px;
+      animation: modalIn 0.25s ease;
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .modal-header h3 {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--navy);
+    }
+
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+    }
+
+    /* Evidence Items */
+    .evidence-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .evidence-item:last-child {
+      border-bottom: none;
+    }
+
+    .ev-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .ev-text {
+      flex: 1;
+    }
+
+    .ev-text p {
+      font-size: 13px;
+      color: var(--navy);
+      font-weight: 500;
+    }
+
+    .ev-text span {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .ev-val {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    /* Chart Wrappers */
+    .chart-wrap {
+      position: relative;
+      width: 100%;
+      height: 200px;
+    }
+
+    .chart-sm {
+      height: 160px;
+    }
+
+    /* Divider */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 16px 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 1000px) {
+      .grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .grid-3 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+        width: 260px;
+      }
+
+      .sidebar.mobile-open {
+        transform: translateX(0);
+      }
+
+      .main {
+        margin-left: 0;
+      }
+
+      .grid-4,
+      .grid-2,
+      .grid-3 {
+        grid-template-columns: 1fr;
+      }
+
+      .content {
+        padding: 16px;
+      }
+
+      .topbar {
+        padding: 12px 16px;
+      }
+
+      .menu-toggle {
+        display: block;
+      }
+    }
+
+    @media (min-width: 769px) {
+      .menu-toggle {
+        display: none;
+      }
+    }
+
+    .menu-toggle {
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: var(--navy);
+      cursor: pointer;
+      margin-right: 12px;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 3px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="app">
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+      <div class="logo">
+        <div class="logo-icon"><i class="ti ti-activity-heartbeat"></i></div>
+        <div class="logo-text">Chron<span>is</span></div>
+      </div>
+      <div class="nav-label">Overview</div>
+      <div class="nav-item active" onclick="navigate('dashboard', this)">
+        <i class="ti ti-layout-dashboard"></i><span>Dashboard</span>
+      </div>
+      <div class="nav-item" onclick="navigate('insights', this)">
+        <i class="ti ti-bulb"></i><span>Insights</span>
+      </div>
+      <div class="nav-label">Analysis</div>
+      <div class="nav-item" onclick="navigate('timeline', this)">
+        <i class="ti ti-timeline"></i><span>Timeline</span>
+      </div>
+      <div class="nav-item" onclick="navigate('patterns', this)">
+        <i class="ti ti-chart-dots-3"></i><span>Patterns</span>
+      </div>
+      <div class="nav-label">Settings</div>
+      <div class="nav-item" onclick="navigate('settings', this)">
+        <i class="ti ti-settings"></i><span>Settings</span>
+      </div>
+      <div class="user-section">
+        <div class="user-pill">
+          <div class="avatar">MR</div>
+          <div class="user-info">
+            <p>Maria Rehman</p>
+            <span>Active · 24 days</span>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main">
+      <div class="topbar">
+        <div style="display: flex; align-items: center;">
+          <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+          <div class="topbar-left">
+            <h2 id="page-title">Good morning, Maria 👋</h2>
+            <p id="page-sub">Your behavioral summary for the past 7 days</p>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <div class="date-badge"><i class="ti ti-calendar"></i> June 11, 2026</div>
+          <div class="notif-btn"><i class="ti ti-bell"></i>
+            <div class="notif-dot"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <!-- DASHBOARD PAGE -->
+        <div class="page active" id="page-dashboard">
+          <div class="grid-4">
+            <div class="metric-card" style="animation-delay:0.05s">
+              <div class="metric-label">Sleep Quality <div class="metric-icon" style="background:#EFF6FF"><i
+                    class="ti ti-moon" style="color:#1A7BF5"></i></div>
+              </div>
+              <div class="metric-value" id="sleepVal">82</div>
+              <div class="metric-change up"><i class="ti ti-trending-up"></i> +6 pts vs last week</div>
+            </div>
+            <div class="metric-card" style="animation-delay:0.12s">
+              <div class="metric-label">Focus Score <div class="metric-icon" style="background:#F0FDF4"><i
+                    class="ti ti-brain" style="color:#22C55E"></i></div>
+              </div>
+              <div class="metric-value" id="focusVal">74</div>
+              <div class="metric-change down"><i class="ti ti-trending-down"></i> -3 pts vs last week</div>
+            </div>
+            <div class="metric-card" style="animation-delay:0.19s">
+              <div class="metric-label">Mood Avg. <div class="metric-icon" style="background:#FDF4FF"><i
+                    class="ti ti-mood-smile" style="color:#7C3AED"></i></div>
+              </div>
+              <div class="metric-value" id="moodVal">68</div>
+              <div class="metric-change up"><i class="ti ti-trending-up"></i> +11 pts vs last week</div>
+            </div>
+            <div class="metric-card" style="animation-delay:0.26s">
+              <div class="metric-label">Activity <div class="metric-icon" style="background:#FFF7ED"><i
+                    class="ti ti-run" style="color:#F59E0B"></i></div>
+              </div>
+              <div class="metric-value" id="activityVal">91</div>
+              <div class="metric-change up"><i class="ti ti-trending-up"></i> +14 pts vs last week</div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <div class="section-header">
+                <div class="section-title"><i class="ti ti-chart-line"></i>Weekly Trends</div>
+                <div class="period-selector">
+                  <button class="period-btn active" onclick="switchPeriod(this, '7d')">7d</button>
+                  <button class="period-btn" onclick="switchPeriod(this, '30d')">30d</button>
+                  <button class="period-btn" onclick="switchPeriod(this, '90d')">90d</button>
+                </div>
+              </div>
+              <div class="chart-wrap">
+                <canvas id="trendChart"></canvas>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="section-header">
+                <div class="section-title"><i class="ti ti-shield-check"></i>Confidence Indicators</div>
+              </div>
+              <div style="display: grid; grid-template-columns: repeat(4,1fr); gap: 12px;">
+                <div class="conf-ring-wrap">
+                  <div class="ring-container">
+                    <svg class="ring-svg" viewBox="0 0 80 80">
+                      <circle class="ring-bg" cx="40" cy="40" r="30" />
+                      <circle class="ring-fill" id="ring1" cx="40" cy="40" r="30" stroke="#1A7BF5"
+                        stroke-dasharray="188.5" stroke-dashoffset="188.5" />
+                      <div class="ring-label" id="ringVal1">0%</div>
+                    </svg>
+                  </div>
+                  <div class="ring-name">Sleep</div>
+                </div>
+                <div class="conf-ring-wrap">
+                  <div class="ring-container">
+                    <svg class="ring-svg" viewBox="0 0 80 80">
+                      <circle class="ring-bg" cx="40" cy="40" r="30" />
+                      <circle class="ring-fill" id="ring2" cx="40" cy="40" r="30" stroke="#22C55E"
+                        stroke-dasharray="188.5" stroke-dashoffset="188.5" />
+                      <div class="ring-label" id="ringVal2">0%</div>
+                    </svg>
+                  </div>
+                  <div class="ring-name">Focus</div>
+                </div>
+                <div class="conf-ring-wrap">
+                  <div class="ring-container">
+                    <svg class="ring-svg" viewBox="0 0 80 80">
+                      <circle class="ring-bg" cx="40" cy="40" r="30" />
+                      <circle class="ring-fill" id="ring3" cx="40" cy="40" r="30" stroke="#7C3AED"
+                        stroke-dasharray="188.5" stroke-dashoffset="188.5" />
+                      <div class="ring-label" id="ringVal3">0%</div>
+                    </svg>
+                  </div>
+                  <div class="ring-name">Mood</div>
+                </div>
+                <div class="conf-ring-wrap">
+                  <div class="ring-container">
+                    <svg class="ring-svg" viewBox="0 0 80 80">
+                      <circle class="ring-bg" cx="40" cy="40" r="30" />
+                      <circle class="ring-fill" id="ring4" cx="40" cy="40" r="30" stroke="#F59E0B"
+                        stroke-dasharray="188.5" stroke-dashoffset="188.5" />
+                      <div class="ring-label" id="ringVal4">0%</div>
+                    </svg>
+                  </div>
+                  <div class="ring-name">Activity</div>
+                </div>
+              </div>
+              <div class="uncertainty-box">
+                <i class="ti ti-info-circle"></i>
+                <p>Focus confidence is lower this week — 2 days of data are missing. Scores may not fully reflect your
+                  patterns.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div>
+              <div class="section-header">
+                <div class="section-title"><i class="ti ti-bulb"></i>Recent Insights</div>
+                <button class="see-all"
+                  onclick="navigate('insights', document.querySelector('.nav-item[onclick*=\'insights\']'))">See all <i
+                    class="ti ti-arrow-right"></i></button>
+              </div>
+              <div class="insight-item" onclick="openInsight('sleep')">
+                <div class="insight-dot" style="background:#EFF6FF"><i class="ti ti-moon"
+                    style="color:#1A7BF5; font-size:20px"></i></div>
+                <div class="insight-body">
+                  <h4>Sleep onset improving consistently</h4>
+                  <p>You're falling asleep 23 min earlier than your 30-day average.</p>
+                  <div class="insight-meta"><span class="badge badge-blue">Sleep</span><span
+                      class="badge badge-green">Positive trend</span></div>
+                </div>
+              </div>
+              <div class="insight-item" onclick="openInsight('focus')">
+                <div class="insight-dot" style="background:#FFF7ED"><i class="ti ti-brain"
+                    style="color:#F59E0B; font-size:20px"></i></div>
+                <div class="insight-body">
+                  <h4>Afternoon focus dip detected</h4>
+                  <p>Your productivity drops 38% between 2-4 PM on weekdays.</p>
+                  <div class="insight-meta"><span class="badge badge-amber">Focus</span><span
+                      class="badge badge-amber">Pattern detected</span></div>
+                </div>
+              </div>
+              <div class="insight-item" onclick="openInsight('mood')">
+                <div class="insight-dot" style="background:#F0FDF4"><i class="ti ti-mood-smile"
+                    style="color:#22C55E; font-size:20px"></i></div>
+                <div class="insight-body">
+                  <h4>Exercise correlates with mood lift</h4>
+                  <p>Mood scores are 21 pts higher on days you exercise for 30+ min.</p>
+                  <div class="insight-meta"><span class="badge badge-blue">Mood</span><span
+                      class="badge badge-green">Correlation found</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="section-header">
+                <div class="section-title"><i class="ti ti-chart-bar"></i>Daily Breakdown</div>
+              </div>
+              <div class="chart-wrap" style="height:220px">
+                <canvas id="breakdownChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="section-header">
+              <div class="section-title"><i class="ti ti-layout-grid"></i>Activity Heatmap — Last 28 Days</div>
+            </div>
+            <div class="hm-label-row">
+              <div class="hm-label">Mon</div>
+              <div class="hm-label">Tue</div>
+              <div class="hm-label">Wed</div>
+              <div class="hm-label">Thu</div>
+              <div class="hm-label">Fri</div>
+              <div class="hm-label">Sat</div>
+              <div class="hm-label">Sun</div>
+            </div>
+            <div class="heatmap-grid" id="heatmap"></div>
+            <div style="display:flex; align-items:center; gap:8px; margin-top:14px; justify-content:flex-end">
+              <span style="font-size:11px; color:var(--muted)">Low</span>
+              <span style="width:16px;height:16px;border-radius:4px;background:#EFF6FF"></span>
+              <span style="width:16px;height:16px;border-radius:4px;background:#93C5FD"></span>
+              <span style="width:16px;height:16px;border-radius:4px;background:#3B82F6"></span>
+              <span style="width:16px;height:16px;border-radius:4px;background:#1D4ED8"></span>
+              <span style="font-size:11px; color:var(--muted)">High</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- INSIGHTS PAGE -->
+        <div class="page" id="page-insights">
+          <div class="tabs">
+            <button class="tab active" onclick="filterInsights('all', this)">All Insights</button>
+            <button class="tab" onclick="filterInsights('sleep', this)">Sleep</button>
+            <button class="tab" onclick="filterInsights('focus', this)">Focus</button>
+            <button class="tab" onclick="filterInsights('mood', this)">Mood</button>
+            <button class="tab" onclick="filterInsights('activity', this)">Activity</button>
+          </div>
+          <div id="insightsList">
+            <!-- Insights will be dynamically populated -->
+          </div>
+        </div>
+
+        <!-- TIMELINE PAGE -->
+        <div class="page" id="page-timeline">
+          <div class="section-header">
+            <div class="section-title"><i class="ti ti-timeline"></i>Behavioral Timeline</div>
+            <div class="period-selector">
+              <button class="period-btn active">This month</button>
+              <button class="period-btn">3 months</button>
+            </div>
+          </div>
+          <div class="card" style="margin-bottom:20px">
+            <div class="section-title" style="font-size:14px; margin-bottom:14px"><i
+                class="ti ti-chart-area"></i>Pattern evolution over time</div>
+            <div class="chart-wrap" style="height:200px">
+              <canvas id="timelineChart"></canvas>
+            </div>
+          </div>
+          <div class="timeline-wrap" id="timelineList"></div>
+        </div>
+
+        <!-- PATTERNS PAGE -->
+        <div class="page" id="page-patterns">
+          <div class="section-header">
+            <div class="section-title"><i class="ti ti-chart-dots-3"></i>Behavioral Patterns</div>
+          </div>
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-title" style="font-size:13px; font-weight:600; margin-bottom:12px; color:var(--muted)"><i
+                  class="ti ti-sun"></i> Best time of day</div>
+              <div class="chart-sm">
+                <canvas id="hourChart"></canvas>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title" style="font-size:13px; font-weight:600; margin-bottom:12px; color:var(--muted)"><i
+                  class="ti ti-repeat"></i> Weekly rhythm</div>
+              <div class="chart-sm">
+                <canvas id="weekChart"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="section-title" style="margin-bottom:16px"><i class="ti ti-link"></i> How your behaviors connect
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px">
+              <div style="text-align:center; padding:14px; background:var(--bg); border-radius:14px">
+                <div style="font-size:26px; font-weight:700; color:#1A7BF5; font-family:'Outfit'">+0.72</div>
+                <div style="font-size:11px; color:var(--muted)">Sleep → Focus</div>
+                <div style="margin-top:6px"><span class="badge badge-green">Strong</span></div>
+              </div>
+              <div style="text-align:center; padding:14px; background:var(--bg); border-radius:14px">
+                <div style="font-size:26px; font-weight:700; color:#22C55E; font-family:'Outfit'">+0.68</div>
+                <div style="font-size:11px; color:var(--muted)">Exercise → Mood</div>
+                <div style="margin-top:6px"><span class="badge badge-green">Strong</span></div>
+              </div>
+              <div style="text-align:center; padding:14px; background:var(--bg); border-radius:14px">
+                <div style="font-size:26px; font-weight:700; color:#F59E0B; font-family:'Outfit'">+0.44</div>
+                <div style="font-size:11px; color:var(--muted)">Mood → Activity</div>
+                <div style="margin-top:6px"><span class="badge badge-amber">Moderate</span></div>
+              </div>
+              <div style="text-align:center; padding:14px; background:var(--bg); border-radius:14px">
+                <div style="font-size:26px; font-weight:700; color:#EF4444; font-family:'Outfit'">-0.61</div>
+                <div style="font-size:11px; color:var(--muted)">Caffeine → Sleep</div>
+                <div style="margin-top:6px"><span class="badge badge-red">Negative</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="section-title" style="margin-bottom:16px"><i class="ti ti-target"></i> Goal progress this month
+            </div>
+            <div class="progress-wrap">
+              <div class="progress-header"><span>Sleep 8 hrs/night (5/7 days)</span><span
+                  style="font-weight:600; color:#1A7BF5">71%</span></div>
+              <div class="progress-track">
+                <div class="progress-fill" style="width:71%; background:#1A7BF5"></div>
+              </div>
+            </div>
+            <div class="progress-wrap">
+              <div class="progress-header"><span>Exercise 4x/week (3/4 days)</span><span
+                  style="font-weight:600; color:#22C55E">75%</span></div>
+              <div class="progress-track">
+                <div class="progress-fill" style="width:75%; background:#22C55E"></div>
+              </div>
+            </div>
+            <div class="progress-wrap">
+              <div class="progress-header"><span>Mood above 65 daily (4/7 days)</span><span
+                  style="font-weight:600; color:#7C3AED">57%</span></div>
+              <div class="progress-track">
+                <div class="progress-fill" style="width:57%; background:#7C3AED"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SETTINGS PAGE -->
+        <div class="page" id="page-settings">
+          <div class="section-title" style="margin-bottom:20px"><i class="ti ti-settings"></i> Settings</div>
+          <div class="card" style="margin-bottom:16px">
+            <div class="card-title" style="font-weight:600">Profile</div>
+            <div class="divider"></div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:12px">
+              <div>
+                <div style="font-size:12px; color:var(--muted); margin-bottom:4px">Name</div>
+                <div style="font-weight:500">Maria Rehman</div>
+              </div>
+              <div>
+                <div style="font-size:12px; color:var(--muted); margin-bottom:4px">Tracking since</div>
+                <div style="font-weight:500">May 18, 2026</div>
+              </div>
+              <div>
+                <div style="font-size:12px; color:var(--muted); margin-bottom:4px">Data sources</div>
+                <div style="font-weight:500">4 connected</div>
+              </div>
+              <div>
+                <div style="font-size:12px; color:var(--muted); margin-bottom:4px">Timezone</div>
+                <div style="font-weight:500">PKT (UTC+5)</div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title" style="font-weight:600">Notification preferences</div>
+            <div class="divider"></div>
+            <div style="display:flex; flex-direction:column; gap:14px; margin-top:12px">
+              <div style="display:flex; justify-content:space-between"><span>Daily summary</span><span
+                  class="badge badge-green">On</span></div>
+              <div style="display:flex; justify-content:space-between"><span>Insight alerts</span><span
+                  class="badge badge-green">On</span></div>
+              <div style="display:flex; justify-content:space-between"><span>Weekly report</span><span
+                  class="badge badge-green">On</span></div>
+              <div style="display:flex; justify-content:space-between"><span>Anomaly alerts</span><span
+                  class="badge badge-amber">Weekdays only</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Insight Modal -->
+  <div class="modal-overlay" id="insightModal" onclick="closeModal(event)">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modalTitle">Insight Detail</h3>
+        <button class="modal-close" onclick="closeInsightModal()"><i class="ti ti-x"></i></button>
+      </div>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script>
+    // Insight Data
+    const INSIGHTS_DATA = {
+      sleep: {
+        title: 'Sleep onset improving consistently',
+        badge: 'Sleep', conf: 94, color: '#1A7BF5',
+        summary: 'You\'re falling asleep 23 minutes earlier than your 30-day average, with deep sleep duration up 18%.',
+        evidence: [
+          { icon: 'ti-moon', label: 'Avg sleep onset', sub: 'Last 7 days', val: '10:37 PM', trend: 'up' },
+          { icon: 'ti-clock', label: 'Deep sleep', sub: 'vs 30-day avg', val: '+18%', trend: 'up' },
+          { icon: 'ti-device-mobile', label: 'Screen time before bed', sub: 'Last 7 days avg', val: '14 min', trend: 'down' }
+        ],
+        uncertainty: 'Wednesday data missing — estimate based on wearable passive signals only.'
+      },
+      focus: {
+        title: 'Afternoon focus dip detected',
+        badge: 'Focus', conf: 71, color: '#F59E0B',
+        summary: 'Your focus score drops an average of 38% between 2-4 PM on weekdays. This has been consistent for 3 weeks.',
+        evidence: [
+          { icon: 'ti-brain', label: 'Focus at 2-4 PM', sub: 'Weekday avg', val: '44/100', trend: 'down' },
+          { icon: 'ti-brain', label: 'Focus at 10 AM-12 PM', sub: 'Weekday avg', val: '81/100', trend: 'up' },
+          { icon: 'ti-repeat', label: 'Weeks consistent', sub: 'Detected pattern', val: '3 weeks', trend: 'neutral' }
+        ],
+        uncertainty: 'Confidence is 71% — 2 days of self-report data are missing this week.'
+      },
+      mood: {
+        title: 'Exercise correlates with mood lift',
+        badge: 'Mood', conf: 89, color: '#22C55E',
+        summary: 'On days you exercise for 30+ minutes, your mood score averages 21 points higher. The positive effect persists.',
+        evidence: [
+          { icon: 'ti-mood-smile', label: 'Mood on exercise days', sub: 'Avg score', val: '79/100', trend: 'up' },
+          { icon: 'ti-mood-sad', label: 'Mood on rest days', sub: 'Avg score', val: '58/100', trend: 'down' },
+          { icon: 'ti-sun', label: 'Next-morning effect', sub: 'Mood carryover', val: '+12 pts', trend: 'up' }
+        ],
+        uncertainty: null
+      }
+    };
+
+    const ALL_INSIGHTS = [
+      { id: 1, title: 'Sleep onset improving consistently', category: 'sleep', conf: 94, desc: 'You\'re falling asleep 23 min earlier than your 30-day average.', date: 'Jun 8', icon: 'ti-moon', iconBg: '#EFF6FF', iconColor: '#1A7BF5' },
+      { id: 2, title: 'Afternoon focus dip detected', category: 'focus', conf: 71, desc: 'Your productivity drops 38% between 2-4 PM on weekdays.', date: 'Jun 7', icon: 'ti-brain', iconBg: '#FFF7ED', iconColor: '#F59E0B' },
+      { id: 3, title: 'Exercise correlates with mood lift', category: 'mood', conf: 89, desc: 'Mood scores are 21 pts higher on exercise days.', date: 'Jun 5', icon: 'ti-mood-smile', iconBg: '#F0FDF4', iconColor: '#22C55E' },
+      { id: 4, title: 'Social interactions boost next-day focus', category: 'activity', conf: 62, desc: 'Days with 2+ hours of social activity show 15% focus increase.', date: 'Jun 3', icon: 'ti-social', iconBg: '#EDE9FE', iconColor: '#7C3AED' },
+      { id: 5, title: 'Late caffeine linked to sleep fragmentation', category: 'sleep', conf: 78, desc: 'Caffeine after 3 PM correlates with 40 min less deep sleep.', date: 'Jun 1', icon: 'ti-coffee', iconBg: '#FEE2E2', iconColor: '#EF4444' }
+    ];
+
+    const TIMELINE_EVENTS = [
+      { date: 'Jun 11', title: 'Sleep streak: 5 nights above 80', desc: 'Your best sustained sleep period in 3 months.', type: 'positive', color: '#1A7BF5' },
+      { date: 'Jun 8', title: 'Mood recovery after social weekend', desc: 'Mood jumped from 54 to 79 over two days.', type: 'positive', color: '#22C55E' },
+      { date: 'Jun 5', title: 'Focus hit 3-week low', desc: 'Work overload and poor sleep converged. Focus dropped to 52.', type: 'anomaly', color: '#F59E0B' },
+      { date: 'Jun 1', title: 'New exercise habit: 4th consecutive week', desc: '30+ min exercise 4 days/week for 4 weeks.', type: 'positive', color: '#7C3AED' },
+      { date: 'May 24', title: 'Data gap: 3 days untracked', desc: 'Travel disrupted logging. Confidence lower for this period.', type: 'warning', color: '#EF4444' },
+      { date: 'May 18', title: 'Chronis onboarded — baseline established', desc: 'Initial 7-day baseline captured. Your journey begins.', type: 'info', color: '#1A7BF5' }
+    ];
+
+    let currentChart1, currentChart2, currentChart3, currentChart4, currentChart5;
+
+    function navigate(page, el) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.getElementById('page-' + page).classList.add('active');
+      if (el) el.classList.add('active');
+
+      const titles = {
+        dashboard: ['Good morning, Maria 👋', 'Your behavioral summary for the past 7 days'],
+        insights: ['Insights', 'Patterns and discoveries from your data'],
+        timeline: ['Narrative Timeline', 'How your behaviors have evolved over time'],
+        patterns: ['Behavioral Patterns', 'Deep analysis of your lifestyle habits'],
+        settings: ['Settings', 'Manage your Chronis account']
+      };
+      if (titles[page]) {
+        document.getElementById('page-title').textContent = titles[page][0];
+        document.getElementById('page-sub').textContent = titles[page][1];
+      }
+
+      // Close mobile sidebar after navigation
+      document.getElementById('sidebar').classList.remove('mobile-open');
+    }
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('mobile-open');
+    }
+
+    function switchPeriod(el, period) {
+      el.closest('.period-selector').querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    function filterInsights(category, el) {
+      el.closest('.tabs').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+
+      const filtered = category === 'all' ? ALL_INSIGHTS : ALL_INSIGHTS.filter(i => i.category === category);
+      renderInsightsList(filtered);
+    }
+
+    function renderInsightsList(insights) {
+      const container = document.getElementById('insightsList');
+      container.innerHTML = insights.map(insight => `
+      <div class="insight-item" onclick="openInsight('${insight.category}')" style="animation:slideUp 0.3s ease both">
+        <div class="insight-dot" style="background:${insight.iconBg}"><i class="ti ${insight.icon}" style="color:${insight.iconColor}; font-size:20px"></i></div>
+        <div class="insight-body" style="flex:1">
+          <h4>${insight.title}</h4>
+          <p>${insight.desc}</p>
+          <div class="insight-meta">
+            <span class="badge badge-blue">${insight.category}</span>
+            <span class="badge ${insight.conf > 80 ? 'badge-green' : 'badge-amber'}">Confidence: ${insight.conf}%</span>
+            <span style="font-size:11px; color:var(--muted); margin-left:auto">${insight.date}</span>
+          </div>
+        </div>
+      </div>
+    `).join('');
+    }
+
+    function renderTimeline() {
+      const container = document.getElementById('timelineList');
+      container.innerHTML = TIMELINE_EVENTS.map((event, idx) => `
+      <div class="tl-item">
+        <div class="tl-left"><div class="tl-date">${event.date}</div></div>
+        <div class="tl-dot-col">
+          <div class="tl-dot" style="background:${event.color}; border-color:${event.color}"></div>
+          ${idx !== TIMELINE_EVENTS.length - 1 ? '<div class="tl-dot-line"></div>' : ''}
+        </div>
+        <div class="tl-content">
+          <div class="tl-card">
+            <h4>${event.title}</h4>
+            <p>${event.desc}</p>
+          </div>
+        </div>
+      </div>
+    `).join('');
+    }
+
+    function openInsight(key) {
+      const d = INSIGHTS_DATA[key];
+      if (!d) return;
+      document.getElementById('modalTitle').textContent = d.title;
+      let html = `<div style="display:flex; align-items:center; gap:8px; margin-bottom:16px">
+      <span class="badge badge-blue">${d.badge}</span>
+      <span class="badge badge-green">Confidence: ${d.conf}%</span>
+    </div>`;
+      html += `<p style="font-size:14px; color:var(--muted); line-height:1.6; margin-bottom:20px">${d.summary}</p>`;
+      html += `<div style="font-size:12px; font-weight:600; color:var(--navy); margin-bottom:12px">📊 Supporting Evidence</div>`;
+      d.evidence.forEach(ev => {
+        const trendColor = ev.trend === 'up' ? '#22C55E' : (ev.trend === 'down' ? '#EF4444' : '#6B7A99');
+        html += `<div class="evidence-item">
+        <div class="ev-icon" style="background:#F0F4FF"><i class="ti ${ev.icon}" style="font-size:18px; color:${trendColor}"></i></div>
+        <div class="ev-text"><p>${ev.label}</p><span>${ev.sub}</span></div>
+        <div class="ev-val" style="color:${trendColor}">${ev.val}</div>
+      </div>`;
+      });
+      if (d.uncertainty) {
+        html += `<div class="uncertainty-box" style="margin-top:16px"><i class="ti ti-info-circle"></i><p>${d.uncertainty}</p></div>`;
+      }
+      document.getElementById('modalBody').innerHTML = html;
+      document.getElementById('insightModal').classList.add('open');
+    }
+
+    function closeInsightModal() {
+      document.getElementById('insightModal').classList.remove('open');
+    }
+
+    function closeModal(e) {
+      if (e.target === document.getElementById('insightModal')) closeInsightModal();
+    }
+
+    function animateRing(ringId, valId, percent) {
+      const circumference = 188.5;
+      const offset = circumference * (1 - percent / 100);
+      const ring = document.getElementById(ringId);
+      const valEl = document.getElementById(valId);
+      if (ring) {
+        ring.style.strokeDashoffset = offset;
+        if (valEl) valEl.textContent = percent + '%';
+      }
+    }
+
+    function buildHeatmap() {
+      const hm = document.getElementById('heatmap');
+      if (!hm) return;
+      hm.innerHTML = '';
+      const colors = ['#EFF6FF', '#BFDBFE', '#93C5FD', '#60A5FA', '#3B82F6', '#2563EB', '#1D4ED8'];
+      for (let i = 0; i < 28; i++) {
+        const val = Math.floor(Math.random() * 7);
+        const cell = document.createElement('div');
+        cell.className = 'hm-cell';
+        cell.style.backgroundColor = colors[val];
+        cell.title = `Day ${i + 1}: activity score ${(val + 1) * 14}`;
+        hm.appendChild(cell);
+      }
+    }
+
+    // Initialize Charts
+    function initCharts() {
+      const labels7 = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+      // Trend Chart
+      const ctx1 = document.getElementById('trendChart')?.getContext('2d');
+      if (ctx1 && window.Chart) {
+        if (currentChart1) currentChart1.destroy();
+        currentChart1 = new Chart(ctx1, {
+          type: 'line',
+          data: {
+            labels: labels7,
+            datasets: [
+              { label: 'Sleep', data: [76, 80, 71, 85, 79, 88, 82], borderColor: '#1A7BF5', backgroundColor: 'rgba(26,123,245,0.05)', tension: 0.4, fill: true },
+              { label: 'Focus', data: [72, 74, 65, 80, 70, 75, 74], borderColor: '#22C55E', tension: 0.4 },
+              { label: 'Mood', data: [60, 65, 58, 72, 68, 76, 68], borderColor: '#7C3AED', tension: 0.4 },
+              { label: 'Activity', data: [85, 90, 80, 95, 85, 92, 91], borderColor: '#F59E0B', tension: 0.4 }
+            ]
+          },
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 40, max: 100 } } }
+        });
+      }
+
+      // Breakdown Chart
+      const ctx2 = document.getElementById('breakdownChart')?.getContext('2d');
+      if (ctx2 && window.Chart) {
+        if (currentChart2) currentChart2.destroy();
+        currentChart2 = new Chart(ctx2, {
+          type: 'bar',
+          data: { labels: labels7, datasets: [{ label: 'Score', data: [76, 80, 71, 85, 79, 88, 82], backgroundColor: '#1A7BF5', borderRadius: 8 }] },
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 40, max: 100 } } }
+        });
+      }
+
+      // Timeline Chart
+      const ctx3 = document.getElementById('timelineChart')?.getContext('2d');
+      if (ctx3 && window.Chart) {
+        if (currentChart3) currentChart3.destroy();
+        currentChart3 = new Chart(ctx3, {
+          type: 'line',
+          data: { labels: ['May 18', 'May 22', 'May 26', 'May 30', 'Jun 3', 'Jun 7', 'Jun 11'], datasets: [{ label: 'Overall', data: [64, 68, 62, 72, 75, 78, 82], borderColor: '#1A7BF5', backgroundColor: 'rgba(26,123,245,0.08)', fill: true, tension: 0.4 }] },
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 40, max: 100 } } }
+        });
+      }
+
+      // Hour Chart
+      const ctx4 = document.getElementById('hourChart')?.getContext('2d');
+      if (ctx4 && window.Chart) {
+        if (currentChart4) currentChart4.destroy();
+        currentChart4 = new Chart(ctx4, {
+          type: 'radar',
+          data: { labels: ['6 AM', '9 AM', '12 PM', '3 PM', '6 PM', '9 PM'], datasets: [{ label: 'Performance', data: [70, 88, 82, 54, 74, 66], borderColor: '#1A7BF5', backgroundColor: 'rgba(26,123,245,0.1)', pointBackgroundColor: '#1A7BF5' }] },
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { r: { min: 30, max: 100, ticks: { display: false } } } }
+        });
+      }
+
+      // Week Chart
+      const ctx5 = document.getElementById('weekChart')?.getContext('2d');
+      if (ctx5 && window.Chart) {
+        if (currentChart5) currentChart5.destroy();
+        currentChart5 = new Chart(ctx5, {
+          type: 'radar',
+          data: { labels: labels7, datasets: [{ label: 'Score', data: [76, 80, 71, 85, 79, 88, 82], borderColor: '#7C3AED', backgroundColor: 'rgba(124,58,237,0.1)', pointBackgroundColor: '#7C3AED' }] },
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { r: { min: 50, max: 100, ticks: { display: false } } } }
+        });
+      }
+    }
+
+    // Animate numbers on load
+    function animateNumbers() {
+      const elements = [
+        { id: 'sleepVal', target: 82 }, { id: 'focusVal', target: 74 },
+        { id: 'moodVal', target: 68 }, { id: 'activityVal', target: 91 }
+      ];
+      elements.forEach(el => {
+        const elem = document.getElementById(el.id);
+        if (elem) {
+          let current = 0;
+          const step = el.target / 30;
+          const interval = setInterval(() => {
+            current += step;
+            if (current >= el.target) {
+              elem.textContent = el.target;
+              clearInterval(interval);
+            } else {
+              elem.textContent = Math.floor(current);
+            }
+          }, 20);
+        }
+      });
+    }
+
+    // Initialize
+    window.addEventListener('DOMContentLoaded', () => {
+      renderInsightsList(ALL_INSIGHTS);
+      renderTimeline();
+      buildHeatmap();
+      initCharts();
+      animateNumbers();
+
+      // Animate rings
+      setTimeout(() => {
+        animateRing('ring1', 'ringVal1', 88);
+        animateRing('ring2', 'ringVal2', 71);
+        animateRing('ring3', 'ringVal3', 82);
+        animateRing('ring4', 'ringVal4', 91);
+      }, 300);
+    });
+
+    // Handle window resize for charts
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        initCharts();
+      }, 250);
+    });
+
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', (e) => {
+      const sidebar = document.getElementById('sidebar');
+      const menuBtn = e.target.closest('.menu-toggle');
+      if (window.innerWidth <= 768 && sidebar.classList.contains('mobile-open') && !menuBtn && !sidebar.contains(e.target)) {
+        sidebar.classList.remove('mobile-open');
+      }
+    });
+  </script>
+
+</body>
+
+</html>
